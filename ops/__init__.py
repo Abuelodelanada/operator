@@ -342,15 +342,15 @@ from .version import version as __version__
 
 class _Main:
     def __call__(
-        self, charm_class: Type[charm.CharmBase], use_juju_for_storage: Optional[bool] = None
+        self, charm_class: Type[charm.CharmBase], use_juju_for_storage: Optional[bool] = None, factory_method = None
     ):
-        return _main.main(charm_class=charm_class, use_juju_for_storage=use_juju_for_storage)
+        return _main.main(charm_class=charm_class, use_juju_for_storage=use_juju_for_storage, factory_method=factory_method)
 
     def main(
-        self, charm_class: Type[charm.CharmBase], use_juju_for_storage: Optional[bool] = None
+        self, charm_class: Type[charm.CharmBase], use_juju_for_storage: Optional[bool] = None, factory_method = None
     ):
         return _legacy_main.main(
-            charm_class=charm_class, use_juju_for_storage=use_juju_for_storage
+            charm_class=charm_class, use_juju_for_storage=use_juju_for_storage, factory_method=factory_method
         )
 
 
