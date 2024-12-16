@@ -411,7 +411,7 @@ class _Manager:
 
     def _make_charm(self, framework: '_framework.Framework', dispatcher: _Dispatcher):
         if self._factory_method:
-            charm = self._charm_class.self._factory_method(framework)
+            charm = self._factory_method(framework)
             dispatcher.ensure_event_links(charm)
             return charm
 
