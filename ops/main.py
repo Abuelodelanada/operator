@@ -29,7 +29,7 @@ from ._main import (  # noqa: F401
 )
 
 
-def main(charm_class: Type[ops.charm.CharmBase], use_juju_for_storage: Optional[bool] = None):
+def main(charm_class: Type[ops.charm.CharmBase], use_juju_for_storage: Optional[bool] = None, factory_method = None):
     """Legacy entrypoint to set up the charm and dispatch the observed event.
 
     .. deprecated:: 2.16.0
@@ -42,4 +42,4 @@ def main(charm_class: Type[ops.charm.CharmBase], use_juju_for_storage: Optional[
         DeprecationWarning,
         stacklevel=2,
     )
-    return _main.main(charm_class=charm_class, use_juju_for_storage=use_juju_for_storage)
+    return _main.main(charm_class=charm_class, use_juju_for_storage=use_juju_for_storage, factory_method=factory_method)
