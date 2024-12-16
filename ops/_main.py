@@ -21,7 +21,7 @@ import subprocess
 import sys
 import warnings
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Type, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Tuple, Type, Union, cast
 
 from . import charm as _charm
 from . import framework as _framework
@@ -380,12 +380,14 @@ class _Manager:
         use_juju_for_storage: Optional[bool] = None,
         charm_state_path: str = CHARM_STATE_FILE,
         juju_context: Optional[_JujuContext] = None,
+        factory_method = None,
     ):
         if juju_context is None:
             juju_context = _JujuContext.from_dict(os.environ)
         self._juju_context = juju_context
         self._charm_state_path = charm_state_path
         self._charm_class = charm_class
+        self._factory_method = factory_method
         if model_backend is None:
             model_backend = _model._ModelBackend(juju_context=self._juju_context)
         self._model_backend = model_backend
@@ -408,6 +410,11 @@ class _Manager:
         return _charm.CharmMeta.from_charm_root(self._charm_root)
 
     def _make_charm(self, framework: '_framework.Framework', dispatcher: _Dispatcher):
+        if self._factory_method:
+            charm = self._charm_class.self._factory_method(framework)
+            dispatcher.ensure_event_links(charm)
+            return charm
+
         charm = self._charm_class(framework)
         dispatcher.ensure_event_links(charm)
         return charm
@@ -554,13 +561,13 @@ class _Manager:
             self.framework.close()
 
 
-def main(charm_class: Type[_charm.CharmBase], use_juju_for_storage: Optional[bool] = None):
+def main(charm_class: Type[_charm.CharmBase], use_juju_for_storage: Optional[bool] = None, factory_method = None):
     """Set up the charm and dispatch the observed event.
 
     See `ops.main() <#ops-main-entry-point>`_ for details.
     """
     try:
-        manager = _Manager(charm_class, use_juju_for_storage=use_juju_for_storage)
+        manager = _Manager(charm_class, use_juju_for_storage=use_juju_for_storage, factory_method=factory_method)
 
         manager.run()
     except _Abort as e:
